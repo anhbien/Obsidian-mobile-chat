@@ -1,0 +1,9 @@
+{
+  "id": "claude-chat",
+  "name": "Claude Chat",
+  "version": "1.0.0",
+  "minAppVersion": "1.0.0",
+  "description": "Chat with Claude AI to interact with your Obsidian vault. Mobile-first UI with full vault agent capabilities.",
+  "author": "Anh Bien",
+  "isDesktopOnly": false
+}
