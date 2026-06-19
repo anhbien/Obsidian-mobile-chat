@@ -1,14 +1,40 @@
-import { App, PluginSettingTab, Setting } from "obsidian";
+import { App, Notice, PluginSettingTab, Setting } from "obsidian";
 import type ClaudeChatPlugin from "../main";
-import { CLAUDE_MODELS } from "../api/models";
+import {
+  fetchModels,
+  getCachedModels,
+  setCachedModels,
+} from "../api/models";
 import { DEFAULT_SYSTEM_PROMPT } from "../constants";
 
 export class ClaudeChatSettingTab extends PluginSettingTab {
   plugin: ClaudeChatPlugin;
+  private modelsFetched = false;
 
   constructor(app: App, plugin: ClaudeChatPlugin) {
     super(app, plugin);
     this.plugin = plugin;
+  }
+
+  /** Fetch the live model list from the API and re-render. */
+  private async refreshModels(silent = false): Promise<void> {
+    const apiKey = this.plugin.settings.apiKey;
+    if (!apiKey) {
+      if (!silent) new Notice("Add your API key first to load models.");
+      return;
+    }
+    try {
+      const models = await fetchModels(apiKey);
+      setCachedModels(models);
+      if (!silent) new Notice(`Loaded ${models.length} models.`);
+      this.display();
+    } catch (e) {
+      if (!silent) {
+        new Notice(
+          `Could not load models: ${e instanceof Error ? e.message : String(e)}`
+        );
+      }
+    }
   }
 
   display(): void {
@@ -38,17 +64,35 @@ export class ClaudeChatSettingTab extends PluginSettingTab {
     // ── Model ────────────────────────────────────────────────────────────
     new Setting(containerEl)
       .setName("Model")
-      .setDesc("Claude model to use for chat")
+      .setDesc("Claude model to use for chat (refresh to load the latest list)")
       .addDropdown((dropdown) => {
-        for (const model of CLAUDE_MODELS) {
+        const models = getCachedModels();
+        const current = this.plugin.settings.model;
+        // Keep the current selection visible even if it's not in the list.
+        if (current && !models.some((m) => m.id === current)) {
+          dropdown.addOption(current, current);
+        }
+        for (const model of models) {
           dropdown.addOption(model.id, model.name);
         }
-        dropdown.setValue(this.plugin.settings.model);
+        dropdown.setValue(current);
         dropdown.onChange(async (value) => {
           this.plugin.settings.model = value;
           await this.plugin.saveSettings();
         });
-      });
+      })
+      .addExtraButton((btn) =>
+        btn
+          .setIcon("refresh-cw")
+          .setTooltip("Refresh model list from the API")
+          .onClick(() => this.refreshModels())
+      );
+
+    // Auto-load the live model list the first time settings open with a key.
+    if (this.plugin.settings.apiKey && !this.modelsFetched) {
+      this.modelsFetched = true;
+      void this.refreshModels(true);
+    }
 
     // ── Max Tokens ───────────────────────────────────────────────────────
     new Setting(containerEl)

@@ -14,7 +14,7 @@ export interface PluginSettings {
 
 export const DEFAULT_SETTINGS: PluginSettings = {
   apiKey: "",
-  model: "claude-haiku-4-5-20251001",
+  model: "claude-haiku-4-5",
   maxTokens: 4096,
   temperature: 0.7,
   systemPrompt: DEFAULT_SYSTEM_PROMPT,

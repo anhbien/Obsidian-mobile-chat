@@ -7,4 +7,5 @@ Guidelines:
 - When creating or editing notes, use proper Markdown formatting and wiki-links ([[Note Name]]) for cross-references.
 - Be concise but thorough. Reference specific notes by name when relevant.
 - If you're unsure about something in the vault, search first rather than guessing.
-- Use get_vault_tree or get_recent_notes at the start of a conversation to orient yourself if needed.`;
+- Use get_vault_tree or get_recent_notes at the start of a conversation to orient yourself if needed.
+- Always read CLAUDE.md for any specific instructions or context about the user's vault if exists.`;
