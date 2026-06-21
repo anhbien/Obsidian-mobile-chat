@@ -15,7 +15,7 @@ import { executeTools } from "../tools/toolExecutor";
 import { ConfirmationManager } from "../tools/confirmationManager";
 import { getModelInfo } from "../api/models";
 import { estimateTokens, trimMessages } from "./contextStrategy";
-import { saveChat } from "./chatPersistence";
+import { saveChat, loadChat } from "./chatPersistence";
 
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -29,6 +29,7 @@ export type ConversationEventType =
   | "tool_call_start"
   | "tool_call_end"
   | "confirmation_request"
+  | "conversation_loaded"
   | "error";
 
 export type ConversationEvent = {
@@ -310,10 +311,24 @@ export class ConversationManager {
     }
   }
 
-  /** Load messages from a previous conversation */
-  loadMessages(messages: ChatMessage[], apiMessages: ClaudeMessage[]): void {
-    this.messages = messages;
-    this.apiMessages = apiMessages;
+  /** Load a previously saved conversation from a vault file */
+  async loadConversation(filePath: string): Promise<boolean> {
+    const loaded = await loadChat(this.app, filePath);
+    if (!loaded) return false;
+
+    this.cancelGeneration();
+    this.messages = loaded.messages;
+    this.apiMessages = loaded.messages.map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
+    this.conversationId = loaded.metadata.id ?? this.conversationId;
+    this.title = loaded.metadata.title ?? this.title;
+    this.model = loaded.metadata.model ?? this.model;
+    this.created = loaded.metadata.created ?? this.created;
+    this.totalUsage = { input_tokens: 0, output_tokens: 0 };
+    this.emit({ type: "conversation_loaded" });
+    return true;
   }
 
   /** Reset for a new conversation */

@@ -124,10 +124,10 @@ export async function loadChat(
 
 function parseMessagesFromMarkdown(body: string): ChatMessage[] {
   const messages: ChatMessage[] = [];
-  const sections = body.split(/^## [💬🤖] (?:User|Assistant)\s*$/m);
+  const sections = body.split(/^## [💬🤖] (?:User|Assistant)\s*$/mu);
 
   // First item is empty (before first heading), so skip it
-  const headings = [...body.matchAll(/^## ([💬🤖]) (?:User|Assistant)\s*$/gm)];
+  const headings = [...body.matchAll(/^## ([💬🤖]) (?:User|Assistant)\s*$/gmu)];
 
   for (let i = 0; i < headings.length; i++) {
     const role = headings[i][1] === "💬" ? "user" : "assistant";

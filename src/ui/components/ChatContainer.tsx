@@ -37,6 +37,7 @@ export function ChatContainer({ conversationManager }: Props) {
     cancelGeneration,
     newChat,
     confirmAction,
+    loadConversation,
   } = useChat(conversationManager);
 
   const [showHistory, setShowHistory] = useState(false);
@@ -79,8 +80,8 @@ export function ChatContainer({ conversationManager }: Props) {
 
       {showHistory && (
         <ChatHistory
-          onSelectChat={() => {
-            // TODO: load conversation
+          onSelectChat={(filePath) => {
+            loadConversation(filePath);
             setShowHistory(false);
           }}
           onClose={() => setShowHistory(false)}

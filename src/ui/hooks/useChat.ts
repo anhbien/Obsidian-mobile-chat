@@ -15,6 +15,7 @@ export interface UseChatReturn {
   cancelGeneration: () => void;
   newChat: () => void;
   confirmAction: (confirmed: boolean) => void;
+  loadConversation: (filePath: string) => Promise<void>;
 }
 
 export function useChat(conversationManager: ConversationManager): UseChatReturn {
@@ -50,6 +51,12 @@ export function useChat(conversationManager: ConversationManager): UseChatReturn
             confirmResolverRef.current = event.confirmation.resolve;
             setPendingConfirmation(event.confirmation);
           }
+          break;
+        case "conversation_loaded":
+          setMessages(conversationManager.getMessages());
+          setError(null);
+          setIsStreaming(false);
+          setTotalUsage({ ...conversationManager.totalUsage });
           break;
         case "error":
           setError(event.error ?? "Unknown error");
@@ -102,6 +109,14 @@ export function useChat(conversationManager: ConversationManager): UseChatReturn
     setPendingConfirmation(null);
   }, []);
 
+  const loadConversation = useCallback(
+    async (filePath: string) => {
+      setError(null);
+      await conversationManager.loadConversation(filePath);
+    },
+    [conversationManager]
+  );
+
   return {
     messages,
     isStreaming,
@@ -112,5 +127,6 @@ export function useChat(conversationManager: ConversationManager): UseChatReturn
     cancelGeneration,
     newChat,
     confirmAction,
+    loadConversation,
   };
 }
