@@ -1,3 +1,4 @@
+import { Trash2, X } from "lucide-react";
 import { useConversations } from "../hooks/useConversations";
 
 interface Props {
@@ -42,7 +43,7 @@ export function ChatHistory({ onSelectChat, onClose }: Props) {
           onClick={onClose}
           aria-label="Close history"
         >
-          ✕
+          <X size={16} />
         </button>
       </div>
 
@@ -81,7 +82,7 @@ export function ChatHistory({ onSelectChat, onClose }: Props) {
                         }}
                         aria-label="Delete chat"
                       >
-                        🗑
+                        <Trash2 size={14} />
                       </button>
                     </div>
                   ))}

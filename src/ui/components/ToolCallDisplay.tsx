@@ -1,21 +1,30 @@
 import { useState } from "react";
+import {
+  ChevronDown,
+  ChevronRight,
+  CircleCheck,
+  CircleX,
+  Clock,
+  LoaderCircle,
+  type LucideIcon,
+} from "lucide-react";
 import type { ToolCallInfo } from "../../types";
 
 interface Props {
   toolCall: ToolCallInfo;
 }
 
-const STATUS_ICONS: Record<string, string> = {
-  pending: "⏳",
-  running: "🔄",
-  complete: "✅",
-  error: "❌",
+const STATUS_ICONS: Record<string, LucideIcon> = {
+  pending: Clock,
+  running: LoaderCircle,
+  complete: CircleCheck,
+  error: CircleX,
 };
 
 export function ToolCallDisplay({ toolCall }: Props) {
   const [expanded, setExpanded] = useState(false);
 
-  const icon = STATUS_ICONS[toolCall.status] ?? "⏳";
+  const Icon = STATUS_ICONS[toolCall.status] ?? Clock;
   const inputSummary = Object.entries(toolCall.input)
     .map(([k, v]) => {
       const val = typeof v === "string" ? v : JSON.stringify(v);
@@ -29,10 +38,12 @@ export function ToolCallDisplay({ toolCall }: Props) {
       onClick={() => setExpanded(!expanded)}
     >
       <div className="claude-chat-tool-call-header">
-        <span className="claude-chat-tool-call-icon">{icon}</span>
+        <span className="claude-chat-tool-call-icon">
+          <Icon size={16} />
+        </span>
         <span className="claude-chat-tool-call-name">{toolCall.name}</span>
         <span className="claude-chat-tool-call-chevron">
-          {expanded ? "▼" : "▶"}
+          {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
         </span>
       </div>
 

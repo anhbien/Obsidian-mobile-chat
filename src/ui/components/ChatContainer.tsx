@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { TriangleAlert } from "lucide-react";
 import type { ConversationManager } from "../../conversation/conversationManager";
 import { useChat } from "../hooks/useChat";
 import { usePlugin } from "../context/PluginContext";
@@ -104,7 +105,9 @@ export function ChatContainer({ conversationManager }: Props) {
 
       {error && (
         <div className="claude-chat-error">
-          <span className="claude-chat-error-icon">⚠️</span>
+          <span className="claude-chat-error-icon">
+            <TriangleAlert size={16} />
+          </span>
           {error}
         </div>
       )}

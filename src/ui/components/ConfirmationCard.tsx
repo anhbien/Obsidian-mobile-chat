@@ -1,3 +1,4 @@
+import { Check, Lock, X } from "lucide-react";
 import type { ConfirmationRequest } from "../../types";
 
 interface Props {
@@ -10,7 +11,9 @@ export function ConfirmationCard({ request, onConfirm, onReject }: Props) {
   return (
     <div className="claude-chat-confirmation">
       <div className="claude-chat-confirmation-header">
-        <span className="claude-chat-confirmation-icon">🔒</span>
+        <span className="claude-chat-confirmation-icon">
+          <Lock size={16} />
+        </span>
         <span>{request.description}</span>
       </div>
 
@@ -35,13 +38,13 @@ export function ConfirmationCard({ request, onConfirm, onReject }: Props) {
           className="claude-chat-btn claude-chat-btn-approve"
           onClick={onConfirm}
         >
-          ✓ Approve
+          <Check size={16} /> Approve
         </button>
         <button
           className="claude-chat-btn claude-chat-btn-reject"
           onClick={onReject}
         >
-          ✕ Reject
+          <X size={16} /> Reject
         </button>
       </div>
     </div>

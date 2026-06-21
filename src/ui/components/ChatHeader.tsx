@@ -1,4 +1,5 @@
-import { CLAUDE_MODELS } from "../../api/models";
+import { Menu, Plus } from "lucide-react";
+import { getCachedModels, type ModelInfo } from "../../api/models";
 
 interface Props {
   model: string;
@@ -13,6 +14,12 @@ export function ChatHeader({
   onNewChat,
   onToggleHistory,
 }: Props) {
+  const models = getCachedModels();
+  // Keep the active model selectable even if it's not in the fetched list.
+  const options: ModelInfo[] = models.some((m) => m.id === model)
+    ? models
+    : [{ id: model, name: model, contextWindow: 0, maxOutput: 0 }, ...models];
+
   return (
     <div className="claude-chat-header">
       <button
@@ -21,7 +28,7 @@ export function ChatHeader({
         aria-label="Chat history"
         title="Chat history"
       >
-        ☰
+        <Menu size={18} />
       </button>
 
       <select
@@ -30,7 +37,7 @@ export function ChatHeader({
         onChange={(e) => onModelChange(e.target.value)}
         aria-label="Select model"
       >
-        {CLAUDE_MODELS.map((m) => (
+        {options.map((m) => (
           <option key={m.id} value={m.id}>
             {m.name}
           </option>
@@ -43,7 +50,7 @@ export function ChatHeader({
         aria-label="New chat"
         title="New chat"
       >
-        ＋
+        <Plus size={18} />
       </button>
     </div>
   );

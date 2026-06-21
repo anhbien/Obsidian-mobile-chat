@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { ArrowUp, FileText, Square, X } from "lucide-react";
 import { usePlugin } from "../context/PluginContext";
 
 interface FileAttachment {
@@ -159,13 +160,13 @@ export function InputBar({ onSend, onCancel, isStreaming, disabled }: Props) {
         <div className="claude-chat-attachments">
           {attachedFiles.map((f) => (
             <span key={f.path} className="claude-chat-attachment-chip">
-              📄 {f.basename}
+              <FileText size={14} /> {f.basename}
               <button
                 className="claude-chat-attachment-remove"
                 onClick={() => removeAttachment(f.path)}
                 aria-label={`Remove ${f.basename}`}
               >
-                ×
+                <X size={14} />
               </button>
             </span>
           ))}
@@ -187,7 +188,9 @@ export function InputBar({ onSend, onCancel, isStreaming, disabled }: Props) {
                   }}
                   onMouseEnter={() => setMentionIndex(i)}
                 >
-                  <span className="claude-chat-mention-icon">📄</span>
+                  <span className="claude-chat-mention-icon">
+                    <FileText size={16} />
+                  </span>
                   <div className="claude-chat-mention-text">
                     <span className="claude-chat-mention-name">
                       {file.basename}
@@ -221,7 +224,7 @@ export function InputBar({ onSend, onCancel, isStreaming, disabled }: Props) {
             aria-label="Stop generation"
             title="Stop"
           >
-            ■
+            <Square size={16} fill="currentColor" />
           </button>
         ) : (
           <button
@@ -231,7 +234,7 @@ export function InputBar({ onSend, onCancel, isStreaming, disabled }: Props) {
             aria-label="Send message"
             title="Send"
           >
-            ↑
+            <ArrowUp size={18} />
           </button>
         )}
       </div>

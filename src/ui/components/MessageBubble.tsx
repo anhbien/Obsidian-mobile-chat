@@ -3,6 +3,7 @@ import { MarkdownRenderer, Component } from "obsidian";
 import type { ChatMessage } from "../../types";
 import { ToolCallDisplay } from "./ToolCallDisplay";
 import { usePlugin } from "../context/PluginContext";
+import { linkifyNotePaths } from "../utils/linkify";
 
 interface Props {
   message: ChatMessage;
@@ -26,13 +27,28 @@ function RenderedMarkdown({ content }: { content: string }) {
 
     MarkdownRenderer.render(
       plugin.app,
-      content,
+      linkifyNotePaths(content),
       el,
       "",
       componentRef.current
     );
 
+    // MarkdownRenderer produces internal-link anchors, but they don't open on
+    // click inside a custom view — handle them and open the note in a new tab.
+    const onClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const a = target.closest("a.internal-link");
+      if (!a) return;
+      e.preventDefault();
+      const linktext = a.getAttribute("data-href") ?? a.textContent ?? "";
+      if (linktext) {
+        plugin.app.workspace.openLinkText(linktext, "", "tab");
+      }
+    };
+    el.addEventListener("click", onClick);
+
     return () => {
+      el.removeEventListener("click", onClick);
       componentRef.current?.unload();
     };
   }, [content, plugin.app]);
