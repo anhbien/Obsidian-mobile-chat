@@ -77,6 +77,55 @@ export const TOOL_DEFINITIONS: ToolDefinition[] = [
     },
   },
 
+  {
+    name: "move_note",
+    description:
+      "Move or rename a note to a new vault-relative path. Updates all wiki-links pointing to it.",
+    input_schema: {
+      type: "object",
+      properties: {
+        path: {
+          type: "string",
+          description: "Current vault-relative path or partial filename",
+        },
+        new_path: {
+          type: "string",
+          description: "New vault-relative path, including filename",
+        },
+      },
+      required: ["path", "new_path"],
+    },
+  },
+
+  // ── Delete ─────────────────────────────────────────────────────────────
+  {
+    name: "delete_note",
+    description: "Delete a note, moving it to the system trash.",
+    input_schema: {
+      type: "object",
+      properties: {
+        path: { type: "string", description: "Vault-relative path" },
+      },
+      required: ["path"],
+    },
+  },
+  {
+    name: "delete_folder",
+    description:
+      "Delete a folder, moving it to the system trash. Fails if the folder is non-empty unless recursive=true.",
+    input_schema: {
+      type: "object",
+      properties: {
+        path: { type: "string", description: "Vault-relative folder path" },
+        recursive: {
+          type: "boolean",
+          description: "Pass true to delete a non-empty folder and all its contents",
+        },
+      },
+      required: ["path"],
+    },
+  },
+
   // ── Search ─────────────────────────────────────────────────────────────
   {
     name: "search_vault",
@@ -390,4 +439,7 @@ export const WRITE_TOOLS = new Set([
   "patch_note",
   "upsert_frontmatter",
   "create_folder",
+  "move_note",
+  "delete_note",
+  "delete_folder",
 ]);

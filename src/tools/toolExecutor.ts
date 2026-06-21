@@ -3,7 +3,13 @@ import type { ToolUseBlock } from "../types";
 import { WRITE_TOOLS } from "./toolDefinitions";
 import { ConfirmationManager } from "./confirmationManager";
 import { handleReadNote, handleFindNote, handleGetCurrentNote } from "./vaultRead";
-import { handleWriteNote, handleAppendToNote } from "./vaultWrite";
+import {
+  handleWriteNote,
+  handleAppendToNote,
+  handleMoveNote,
+  handleDeleteNote,
+  handleDeleteFolder,
+} from "./vaultWrite";
 import { handleSearchVault, handleListFolder } from "./vaultSearch";
 import { handleGetBacklinks, handleGetTags, handleGetMetadata } from "./vaultMetadata";
 import {
@@ -34,6 +40,9 @@ const TOOL_HANDLERS: Record<string, ToolHandler> = {
   get_current_note: handleGetCurrentNote,
   write_note: handleWriteNote,
   append_to_note: handleAppendToNote,
+  move_note: handleMoveNote,
+  delete_note: handleDeleteNote,
+  delete_folder: handleDeleteFolder,
   search_vault: handleSearchVault,
   list_folder: handleListFolder,
   daily_note: handleDailyNote,
@@ -70,6 +79,12 @@ function describeWriteOp(name: string, input: Record<string, unknown>): string {
       return `Update frontmatter in "${input.path}"`;
     case "create_folder":
       return `Create folder "${input.path}"`;
+    case "move_note":
+      return `Move "${input.path}" to "${input.new_path}"`;
+    case "delete_note":
+      return `Delete note "${input.path}"`;
+    case "delete_folder":
+      return `Delete folder "${input.path}"${input.recursive ? " and all its contents" : ""}`;
     default:
       return `${name} on "${input.path}"`;
   }
