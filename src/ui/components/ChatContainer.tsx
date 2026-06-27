@@ -15,6 +15,11 @@ interface FileAttachment {
   basename: string;
 }
 
+interface UploadedFile {
+  name: string;
+  content: string;
+}
+
 interface Props {
   conversationManager: ConversationManager;
 }
@@ -42,21 +47,34 @@ export function ChatContainer({ conversationManager }: Props) {
 
   const [showHistory, setShowHistory] = useState(false);
 
-  const handleSend = async (text: string, attachedFiles?: FileAttachment[]) => {
-    // If files are attached, prepend their content for Claude but display only user text
+  const handleSend = async (
+    text: string,
+    attachedFiles?: FileAttachment[],
+    uploadedFiles?: UploadedFile[]
+  ) => {
+    // If files are attached/uploaded, prepend their content for Claude but display only user text
+    const contextBlocks: string[] = [];
+
     if (attachedFiles && attachedFiles.length > 0) {
-      const fileContents: string[] = [];
       for (const f of attachedFiles) {
         const file = plugin.app.vault.getFileByPath(f.path);
         if (file) {
           const content = await plugin.app.vault.cachedRead(file);
-          fileContents.push(
+          contextBlocks.push(
             `<attached_note path="${f.path}">\n${content}\n</attached_note>`
           );
         }
       }
-      const prefix = fileContents.join("\n\n");
-      const apiText = `${prefix}\n\n${text}`;
+    }
+
+    if (uploadedFiles && uploadedFiles.length > 0) {
+      for (const f of uploadedFiles) {
+        contextBlocks.push(`[File: ${f.name}]\n${f.content}\n`);
+      }
+    }
+
+    if (contextBlocks.length > 0) {
+      const apiText = `${contextBlocks.join("\n\n")}\n\n${text}`;
       await sendMessage(apiText, text);
     } else {
       await sendMessage(text);
