@@ -1005,6 +1005,57 @@
   animation: claude-fade-in 0.3s ease;
 }
 
+/* ── Copy Button ───────────────────────────────────────────────────────────── */
+
+.claude-chat-bubble-actions {
+  display: flex;
+  justify-content: flex-start;
+  padding: 2px 4px 0;
+}
+
+.claude-chat-bubble-actions-user {
+  justify-content: flex-end;
+}
+
+.claude-chat-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border: none;
+  border-radius: 6px;
+  box-shadow: none;
+  background: transparent;
+  color: var(--text-faint);
+  cursor: pointer;
+  font-size: 11px;
+  font-family: var(--font-interface);
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  min-height: auto;
+}
+
+.claude-chat-copy-btn:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-muted);
+}
+
+.claude-chat-copy-btn:active {
+  transform: scale(0.92);
+}
+
+.claude-chat-copy-btn-copied {
+  color: var(--color-green);
+}
+
+.claude-chat-copy-label {
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+}
+
 /* ── Mobile Optimizations ──────────────────────────────────────────────────── */
 
 @media (max-width: 768px) {

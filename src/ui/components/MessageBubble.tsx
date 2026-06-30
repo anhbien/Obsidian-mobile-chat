@@ -1,4 +1,5 @@
-import { useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
+import { Copy, Check } from "lucide-react";
 import { MarkdownRenderer, Component } from "obsidian";
 import type { ChatMessage } from "../../types";
 import { ToolCallDisplay } from "./ToolCallDisplay";
@@ -58,6 +59,27 @@ function RenderedMarkdown({ content }: { content: string }) {
 
 export function MessageBubble({ message, isStreaming }: Props) {
   const isUser = message.role === "user";
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    if (!message.content) return;
+    try {
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(message.content);
+      } else {
+        const el = document.createElement('textarea');
+        el.value = message.content;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (e) {
+      console.error('Copy failed', e);
+    }
+  };
 
   return (
     <div
@@ -96,6 +118,19 @@ export function MessageBubble({ message, isStreaming }: Props) {
           </div>
         )}
       </div>
+
+      {message.content && (
+        <div className={`claude-chat-bubble-actions${isUser ? " claude-chat-bubble-actions-user" : ""}`}>
+          <button
+            className={`claude-chat-copy-btn${copied ? " claude-chat-copy-btn-copied" : ""}`}
+            onClick={handleCopy}
+            aria-label="Copy message"
+          >
+            {copied ? <Check size={14} /> : <Copy size={14} />}
+            {copied && <span className="claude-chat-copy-label">Copied!</span>}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
